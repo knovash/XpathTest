@@ -4,21 +4,13 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class XpathTest {
 
-//    @DataProvider()
-//    public Object[][] page_path() {
-//        return new Object[][]{
-//                {"https://demoqa.com/automation-practice-form", "//*[@id='react-select-3-input']"},
-//                {"https://demoqa.com/automation-practice-form", "//*[@id='currentAddress']"}
-//        };
-//    }
-
-//    @Test(testName = "xpath test", dataProvider = "page_path")
     @Test(testName = "xpath test")
     public void xpathTest(String page, String path) {
         System.setProperty("webdriver.chrome.driver", "/home/konstantin/Downloads/chromedriver_linux64 113/chromedriver");
@@ -37,57 +29,44 @@ public class XpathTest {
         System.out.println("ELEMENT CLASS: " + element.getClass());
         System.out.println("ELEMENT NAME: " + element.getAccessibleName());
         System.out.println("ELEMENT TAG: " + element.getTagName());
-        String tag = element.getTagName();
-
-//        try {
-//            element.click();
-//        } catch (ElementNotInteractableException e) {
-//            System.out.println("CATCH ElementNotInteractableException");
-//            throw new RuntimeException("CLICK ERROR");
-//        }
-
         try {
-            element.sendKeys("NCR");
+            element.click();
+        } catch (ElementNotInteractableException e) {
+            System.out.println("CATCH ElementNotInteractableException");
+            throw new RuntimeException("CLICK ERROR");
+        }
+        try {
+            element.sendKeys("TEST");
         } catch (ElementNotInteractableException e) {
             System.out.println("CATCH ElementNotInteractableException");
             throw new RuntimeException("SENDKEYS ERROR");
         }
-
     }
-
 
     @Test(testName = "multi test")
     public void multiTest() {
-
-//        System.out.println("ELEMENT CLASS: ");
-//        String[] ip_array = new String[]{"бургер", "донер", "пончики"};
-
-        String pagex = "https://demoqa.com/automation-practice-form";
-
-//        Object[][] pages_xpaths = new Object[][]{
-//                {"https://demoqa.com/automation-practice-form", "//*[@id='react-select-3-input']"},
-//                {"https://demoqa.com/automation-practice-form", "//*[@id='currentAddress']"}
-//        };
-
-        String[] xpaths = new String[]{
-                "//*[@id='react-select-3-input']",
-                "//*[@id='currentAddress']"
+        String[][] pages_xpaths = new String[][]{
+                {"https://www.pornhub.com/", "//input[@id=\"searchInput\"]"}, // серч бокс
+                {"https://www.pornhub.com/", "//*[contains(text(), 'Categories')]"} // категории
+//                {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
         };
-
-
-        List<String> listof = List.of(xpaths);
-        List<Boolean> result2 =
-                listof.stream()
-                        .map(item -> CompletableFuture.supplyAsync(() -> testExecutor(pagex, item)))
-                        .collect(Collectors.collectingAndThen(Collectors.toList(), cfs -> cfs.stream().map(CompletableFuture::join)))
+        List<String[]> tasks = new ArrayList<>();
+        for (int i = 0; i < pages_xpaths.length; i++) {
+            String[] task = new String[] {pages_xpaths[i][0], pages_xpaths[i][1]};
+            tasks.add(task);
+        }
+        List<Boolean> results =
+                tasks.stream()
+                        .peek(t -> System.out.println("RUN " + t[0] + " " + t[1]))
+                        .map(t -> CompletableFuture.supplyAsync(() -> testExecutor(t[0], t[1])))
+                        .collect(Collectors.collectingAndThen(Collectors.toList(), completableFutures -> completableFutures
+                                .stream().map(CompletableFuture::join)))
                         .toList();
-        System.out.println("\nRESULT 2 : " + result2);
-
+        System.out.println("RESULTS: " + results);
     }
 
 
     public Boolean testExecutor(String page, String path) {
-        System.out.println("RUN TEST page: " + page + " xpath: " + path);
         xpathTest(page, path);
         return true;
     }
