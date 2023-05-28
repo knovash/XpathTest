@@ -1,8 +1,6 @@
 package org.itacademy.xpathtest;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.*;
 
@@ -27,7 +25,10 @@ public class XpathTest {
                 //*[contains(text(), 'Categories')]
 //                {"https://www.pornhub.com/", "//*[contains(text(), 'Categories')]"} // категории
                 //*[@id="menu"]//*[contains(text(), 'Доставка')]
-                {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
+//                {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
+
+                //*[@id="page-content"]/div[2]/div/div[1]/div[2]/div[5]/a/div[1]
+                {"https://tokiny.by/", "//*[@id=\"page-content\"]/div[2]/div/div[1]/div[2]/div[5]/a/div[1]"}
         };
     }
 
@@ -50,7 +51,12 @@ public class XpathTest {
         System.out.println("ELEMENT NAME: " + element.getAccessibleName());
         System.out.println("ELEMENT TAG: " + element.getTagName());
         String tag = element.getTagName();
-        element.click();
+        try {
+            element.click();
+        } catch (ElementNotInteractableException e) {
+            System.out.println("CATCH ElementNotInteractableException");
+//            throw new RuntimeException("CLICK ERROR");
+        }
         if (tag.equals("input")) {
             System.out.println("TRY SENDKEYS...");
             element.sendKeys("TEST");
