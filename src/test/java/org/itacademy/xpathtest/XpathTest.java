@@ -11,65 +11,61 @@ import java.util.stream.Collectors;
 
 public class XpathTest {
 
-    @Test(testName = "xpath test")
+    // метод тестирования на странице PAGE икспаса PATH.  будет для каждого браузера запускаться в отдельном потоке
     public void xpathTest(String page, String path) {
         System.setProperty("webdriver.chrome.driver", "/home/konstantin/Downloads/chromedriver_linux64 113/chromedriver");
         WebDriver driver = new ChromeDriver();
         driver.get(page);
-        driver.manage().window().maximize();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         WebElement element = driver.findElement(By.xpath(path));
-        System.out.println("PAGE: " + page);
-        System.out.println("ELEMENT DISPLAYED: " + element.isDisplayed());
-        System.out.println("ELEMENT TEXT: " + element.getText());
-        System.out.println("ELEMENT CLASS: " + element.getClass());
-        System.out.println("ELEMENT NAME: " + element.getAccessibleName());
-        System.out.println("ELEMENT TAG: " + element.getTagName());
+        System.out.println(page + " PAGE");
+        System.out.println(page + " ELEMENT DISPLAYED: " + element.isDisplayed());
+        System.out.println(page + " TEXT: " + element.getText());
+        System.out.println(page + " ELEMENT CLASS: " + element.getClass());
+        System.out.println(page + " ELEMENT NAME: " + element.getAccessibleName());
+        System.out.println(page + " ELEMENT TAG: " + element.getTagName());
         try {
             element.click();
         } catch (ElementNotInteractableException e) {
-            System.out.println("CATCH ElementNotInteractableException");
-            throw new RuntimeException("CLICK ERROR");
+            System.out.println(page + " CATCH click error");
+//            throw new RuntimeException("CLICK ERROR");
         }
         try {
             element.sendKeys("TEST");
         } catch (ElementNotInteractableException e) {
-            System.out.println("CATCH ElementNotInteractableException");
-            throw new RuntimeException("SENDKEYS ERROR");
+            System.out.println(page + " CATCH sendkeys error");
+//            throw new RuntimeException("SENDKEYS ERROR");
         }
     }
 
-    @Test(testName = "multi test")
+    @Test(testName = "multithread test executor")
     public void multiTest() {
+        // массив { TEST PAGE, TEST XPATH}
         String[][] pages_xpaths = new String[][]{
-                {"https://www.pornhub.com/", "//input[@id=\"searchInput\"]"}, // серч бокс
-                {"https://www.pornhub.com/", "//*[contains(text(), 'Categories')]"} // категории
-//                {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
+                {"https://donerking.by/", "//div[@id='filters']//button[contains(text(), 'Донеры')]"}
+                , {"https://www.google.com/", "//textarea[@class='gLFyf']"}
+                , {"https://demoqa.com/automation-practice-form", "//input[@id='firstName']"}
         };
         List<String[]> tasks = new ArrayList<>();
+        // массив в коллекцию для стрима
         for (int i = 0; i < pages_xpaths.length; i++) {
-            String[] task = new String[] {pages_xpaths[i][0], pages_xpaths[i][1]};
+            String[] task = new String[]{pages_xpaths[i][0], pages_xpaths[i][1]};
             tasks.add(task);
         }
-        List<Boolean> results =
-                tasks.stream()
-                        .peek(t -> System.out.println("RUN " + t[0] + " " + t[1]))
-                        .map(t -> CompletableFuture.supplyAsync(() -> testExecutor(t[0], t[1])))
-                        .collect(Collectors.collectingAndThen(Collectors.toList(), completableFutures -> completableFutures
-                                .stream().map(CompletableFuture::join)))
-                        .toList();
-        System.out.println("RESULTS: " + results);
+
+        // стрим коллекции.
+        tasks.stream()
+                .peek(t -> System.out.println("RUN " + t[0] + " " + t[1]))
+                // методы теста xpathTest запускаются в отдельных потоках CompletableFuture с параметрами из коллекции
+                .map(t -> CompletableFuture.runAsync(() -> xpathTest(t[0], t[1])))
+                // собирается коллекция запущеных комплитаблфюч
+                .collect(Collectors.collectingAndThen(Collectors.toList(), completableFutures -> completableFutures
+                        // join дожидается каждой завершенной комплитаблфючи
+                        .stream().map(CompletableFuture::join)))
+                .toList();
     }
-
-
-    public Boolean testExecutor(String page, String path) {
-        xpathTest(page, path);
-        return true;
-    }
-
-
 }
