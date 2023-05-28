@@ -28,7 +28,29 @@ public class XpathTest {
 //                {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
 
                 //*[@id="page-content"]/div[2]/div/div[1]/div[2]/div[5]/a/div[1]
-                {"https://tokiny.by/", "//*[@id=\"page-content\"]/div[2]/div/div[1]/div[2]/div[5]/a/div[1]"}
+//                {"https://tokiny.by/", "//*[@id=\"page-content\"]/div[2]/div/div[1]/div[2]/div[5]/a/div[1]"}
+
+                //*[@id="page-content"]/div[2]/div/div[1]/div[2]/div[5]/a
+//                {"https://tokiny.by/", "//div[@style='background-image: url(https://tokiny.by/media/zoo/images/roll_new_f2348ed7712b7496e8af874311a209dc.png);']"}
+//                {"https://tokiny.by/", "//div[contains(@style,'/zoo/images/roll_new_')]"}
+                //*[@id="page-content"]/div[2]/div/div[1]/div[2]/div[5]/a
+
+                //input[@id='firstName']
+//                {"https://demoqa.com/automation-practice-form", "//input[@id='firstName']"}
+
+                //div[@class='subjects-auto-complete__placeholder css-1wa3eu0-placeholder']
+//        class="subjects-auto-complete__control css-yk16xz-control"
+
+//                css-2b097c-container
+//                subjects-auto-complete__control css-yk16xz-control
+//                subjects-auto-complete__value-container subjects-auto-complete__value-container--is-multi css-1hwfws3
+//                subjects-auto-complete__placeholder css-1wa3eu0-placeholder
+//                subjects-auto-complete__input
+//                {"https://demoqa.com/automation-practice-form", "//div[@class='subjects-auto-complete__placeholder css-1wa3eu0-placeholder']"}
+
+//                {"https://demoqa.com/automation-practice-form", "//*[@id='react-select-3-input']"}
+
+                {"https://demoqa.com/automation-practice-form", "//*[@id='currentAddress']"}
         };
     }
 
@@ -39,7 +61,7 @@ public class XpathTest {
         driver.get(page);
         driver.manage().window().maximize();
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -51,15 +73,20 @@ public class XpathTest {
         System.out.println("ELEMENT NAME: " + element.getAccessibleName());
         System.out.println("ELEMENT TAG: " + element.getTagName());
         String tag = element.getTagName();
+
+//        try {
+//            element.click();
+//        } catch (ElementNotInteractableException e) {
+//            System.out.println("CATCH ElementNotInteractableException");
+//            throw new RuntimeException("CLICK ERROR");
+//        }
+
         try {
-            element.click();
+            element.sendKeys("NCR");
         } catch (ElementNotInteractableException e) {
             System.out.println("CATCH ElementNotInteractableException");
-//            throw new RuntimeException("CLICK ERROR");
+            throw new RuntimeException("SENDKEYS ERROR");
         }
-        if (tag.equals("input")) {
-            System.out.println("TRY SENDKEYS...");
-            element.sendKeys("TEST");
-        }
+
     }
 }
