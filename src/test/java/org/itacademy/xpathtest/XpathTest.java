@@ -11,6 +11,11 @@ public class XpathTest {
     @DataProvider()
     public Object[][] page_path() {
         return new Object[][]{
+                /**
+                 * xpath fast test
+                 * insert the { PAGE URL, XPATH } into the dataprovider
+                */
+
 //                {"https://donerking.by/", "//img[@alt='Пончики с шоколадным кремом']"},
 //                {"https://alexstar.ru/", "//*[@id=\"content\"]/div/div[2]/a[3]"},
 //                {"https://alexstar.ru/smarthome/", "//*[@id=\"content\"]/form/div/div[1]/input"},
@@ -18,21 +23,16 @@ public class XpathTest {
                 //*[@id="app"]/div/div/div[2]/div/div[2]/div/div[2]/svg
 //                {"https://demoqa.com", "//*[@id=\"app\"]/div/div/div[2]/div/div[2]/div/div[2]"}
                 //li[@class="pcVideoListItem js-pop videoblock"]
-
 //                {"https://www.pornhub.com/", "//input[@id=\"searchInput\"]"} // серч бокс
-
                 //*[contains(text(), 'Categories')]
 //                {"https://www.pornhub.com/", "//*[contains(text(), 'Categories')]"} // категории
-
                 //*[@id="menu"]//*[contains(text(), 'Доставка')]
-
                 {"https://tokiny.by/", "//*[@id=\"menu\"]//*[contains(text(), 'Доставка')]"}
-
         };
     }
 
-    @Test(testName = "CheckSearch", dataProvider = "page_path")
-    public void verifySearchTest(String page, String path) {
+    @Test(testName = "xpath test", dataProvider = "page_path")
+    public void xpathTest(String page, String path) {
         System.setProperty("webdriver.chrome.driver", "/home/konstantin/Downloads/chromedriver_linux64 113/chromedriver");
         WebDriver driver = new ChromeDriver();
         driver.get(page);
